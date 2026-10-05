@@ -1,0 +1,6 @@
+rootProject.name = 'bangtray-backend'
+
+include 'domain'   // 엔티티·리포지토리 (api/batch 공유)
+include 'api'      // ⑤ 온라인: 추천 API, 회원, 리뷰 (상시 기동)
+include 'batch'    // ①②③⑥ 배치: 수집·전처리·LLM 라벨링·부가 배치 (주 1회)
+include 'spark'    // ④ 점수 집계: Spark 전체 재계산 (v1-mest-hl180) — Spring 미사용 순수 Spark 앱

@@ -1,0 +1,26 @@
+# 도커 빌드 컨텍스트에서 제외할 것들 (backend/ 기준)
+# Dockerfile 이 COPY . . 로 컨텍스트 전체를 가져가므로,
+# 빌드 산출물과 로컬 캐시가 이미지로 새어들어가지 않게 여기서 막는다.
+
+# Gradle 산출물 · 캐시
+.gradle/
+**/.gradle/
+build/
+**/build/
+
+# IDE · OS
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# VCS · 도커 자기 자신
+.git/
+.gitignore
+.gitattributes
+Dockerfile
+.dockerignore
+
+# 로그 · 임시
+*.log
+**/*.log

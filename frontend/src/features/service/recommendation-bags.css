@@ -1,0 +1,161 @@
+.reveal-main { width: min(1160px, calc(100% - 64px)); margin: 0 auto; padding: 40px 0 30px; }
+.reveal-heading { text-align: center; }
+.section-kicker { display: block; margin-bottom: 12px; color: var(--forest); font-size: 13px; font-weight: 650; letter-spacing: .06em; }
+.reveal-heading h1 { color: var(--cocoa); font-size: clamp(27px, 2.8vw, 38px); font-weight: 750; line-height: 1.35; letter-spacing: -.04em; word-break: keep-all; }
+.reveal-heading p { min-height: 24px; margin-top: 12px; color: var(--muted); font-size: 16px; line-height: 1.6; word-break: keep-all; }
+
+/* ── gallery: one bag centre stage; the others are reached with the ← n / N → controls below ── */
+.bag-gallery { position: relative; display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; column-gap: 8px; align-items: start; justify-items: center; min-height: 660px; margin-top: 20px; isolation: isolate; }
+.bag-slot { grid-column: 2; width: min(760px, 100%); min-width: 0; }
+.bag-slot[data-position="center"] { min-height: 660px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+/* side arrows: beside the bag, and they stay in view while the long card scrolls.
+   margin-top 306px puts the arrow's centre on the bag's centre (the bag starts 110px into the gallery and is ~444px tall).
+   top is capped at that same spot (gallery top ≈264px + 306px at scroll 0) so on tall screens sticky never pushes the
+   arrow below the bag on load; on shorter screens it scrolls with the bag, then pins at mid-screen. */
+.bag-side-nav { grid-row: 1; position: sticky; top: min(calc(50vh - 24px), 570px); display: grid; place-items: center; width: 48px; height: 48px; margin-top: 306px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--cocoa); box-shadow: 0 4px 14px rgb(70 52 34 / 8%); transition: border-color 160ms ease, color 160ms ease, transform 160ms ease; }
+.bag-side-nav[data-dir="prev"] { grid-column: 1; }
+.bag-side-nav[data-dir="next"] { grid-column: 3; }
+.bag-side-nav svg { width: 20px; height: 20px; }
+.bag-side-nav:not(:disabled):hover { border-color: var(--forest); color: var(--forest); transform: translateY(-2px); }
+.bag-side-nav:disabled { opacity: .3; cursor: default; }
+
+/* ── centre stage: the bag (with the card in its mouth) and the action row below ── */
+.bag-stage { display: flex; flex-direction: column; align-items: center; width: 100%; }
+.bag-stage[data-stage="closed"], .bag-stage[data-stage="shaking"] { width: min(380px, 100%); justify-content: center; min-height: 660px; }
+.bag-stage[data-stage="revealing"] { width: min(380px, 100%); }
+/* the bag and the card share one grid cell: the card rises out of the mouth, then sits in front of the bag,
+   covering it except the open flap; moving on sends it back in */
+.bag-open-layout { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; align-items: start; width: 100%; padding-top: 110px; }
+.bag-open-layout > .bag-opened { grid-area: 1 / 1; position: relative; z-index: 0; width: min(380px, 100%); }
+.bag-open-layout > .profile-card { grid-area: 1 / 1; z-index: 1; width: min(352px, 100%); margin-top: 84px; }
+.bag-open-button { position: relative; display: block; width: 100%; padding: 0; border: 0; background: transparent; border-radius: 24px; transition: transform 200ms ease; }
+.bag-open-button:disabled { opacity: 1; cursor: wait; }
+.bag-open-button:not(:disabled):hover { transform: translateY(-5px); }
+.bag-open-prompt { position: absolute; left: 50%; bottom: -28px; display: inline-flex; align-items: center; gap: 10px; transform: translateX(-50%); white-space: nowrap; color: var(--cocoa); font-size: 14px; }
+.bag-open-prompt svg { width: 17px; }
+
+
+/* ── bag artwork ── */
+.bag-artwork { position: relative; width: 100%; aspect-ratio: 1000 / 1170; filter: drop-shadow(0 12px 12px rgb(91 58 36 / 9%)); }
+.bag-paper { position: relative; z-index: 1; width: 100%; height: 100%; display: block; }
+.bag-seal { position: absolute; z-index: 2; top: 12%; left: 37%; width: 26%; }
+/* Printed label: name above the ♥ line, district below it, three feature slots (positions measured on bag-label.png). */
+.bag-print { position: absolute; z-index: 2; top: 36%; left: 17%; width: 66%; aspect-ratio: 970 / 980; color: var(--cocoa); text-align: center; }
+.bag-print > svg { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .9; }
+.bag-print-name { position: absolute; left: 12%; right: 12%; top: 26%; font-size: clamp(14px, 1.75vw, 22px); font-weight: 800; line-height: 1.2; letter-spacing: -.03em; color: var(--forest); overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.bag-print-place { position: absolute; left: 12%; right: 12%; top: 54%; font-size: clamp(10px, 1.1vw, 14px); font-weight: 600; }
+.bag-print-features { position: absolute; left: 13.4%; width: 72.3%; top: 66.5%; height: 8%; margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5%; }
+.bag-print-features li { display: grid; place-items: center; min-width: 0; padding-inline: 3%; font-size: clamp(8px, .85vw, 10.5px); font-weight: 650; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* the label prints while the card rises — only during the first reveal, not when coming back to an opened bag */
+.bag-open-layout[data-stage="revealing"] .bag-artwork--open .bag-print { animation: bag-print-in 420ms ease both; }
+
+/* The mouth: from well above the bag down to the front rim (30.6% of the artwork), overflow hidden,
+   so a card inside it is cut off at the rim and reads as sitting in the bag. */
+.bag-mouth { position: absolute; z-index: 3; left: 0; right: 0; top: -34%; bottom: 69.4%; overflow: hidden; pointer-events: none; }
+.bag-card { position: absolute; left: 13%; width: 74%; bottom: -70px; box-sizing: border-box; padding: 9px 9px 74px; border: 1px solid var(--olive); border-radius: 16px; background: var(--surface); box-shadow: 0 10px 26px rgb(91 58 36 / 14%); transform: rotate(-1.5deg); transform-origin: 50% 100%; pointer-events: auto; }
+.bag-card::before { content: ''; position: absolute; inset: 5px; border: 1px solid var(--gold); border-radius: 12px; pointer-events: none; }
+.bag-card-top { display: flex; justify-content: flex-start; margin-bottom: 7px; }
+.bag-card-photo { display: grid; place-items: center; height: 150px; padding: 5px; background: var(--canvas); border: 1px solid var(--line-soft); border-radius: 11px; }
+.bag-card-photo img { display: block; width: 100%; height: 100%; min-height: 0; object-fit: contain; border-radius: 8px; }
+.bag-card-name { margin: 9px 4px 0; color: var(--cocoa); font-size: clamp(17px, 1.6vw, 21px); font-weight: 750; line-height: 1.3; letter-spacing: -.03em; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.bag-card-name:focus { outline: none; }
+.bag-card[data-state="revealing"] { animation: bag-card-rise 900ms cubic-bezier(.2, .8, .2, 1) both; }
+
+
+
+
+
+/* ── the card out of the bag: kraft ticket with a green frame ── */
+.profile-card { position: relative; width: 100%; border: 2px solid var(--forest); border-radius: 22px; background: #ecdcbb; box-shadow: 0 14px 34px rgb(91 58 36 / 14%); overflow: hidden; }
+.profile-card::before { content: ''; position: absolute; inset: 6px; border: 1px solid rgb(101 107 53 / 55%); border-radius: 16px; pointer-events: none; z-index: 1; }
+.profile-card-photo { height: 240px; padding: 14px 14px 0; }
+.profile-card-photo img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 12px; border: 1px solid rgb(91 58 36 / 18%); background: var(--canvas); }
+.profile-card-body { padding: 16px 20px 22px; }
+.profile-topline { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.profile-hashtags { display: flex; flex-wrap: wrap; gap: 4px 8px; margin: 0; color: var(--forest); font-size: 13px; font-weight: 650; }
+.profile-card-title { margin: 10px 0 0; color: var(--cocoa); font-size: clamp(24px, 2.3vw, 30px); font-weight: 800; line-height: 1.3; letter-spacing: -.035em; overflow-wrap: anywhere; }
+.profile-card-title:focus { outline: none; }
+.profile-place { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+.profile-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.profile-actions .ui-button { min-height: 48px; padding-inline: 10px; font-size: 14px; }
+.ticket-note { margin-top: 10px; color: var(--muted); text-align: center; font-size: 12px; line-height: 1.6; }
+.profile-section { margin-top: 18px; padding-top: 16px; border-top: 1px dashed rgb(101 107 53 / 45%); }
+.profile-section h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 0 0 10px; color: var(--cocoa); font-size: 16px; font-weight: 750; }
+.profile-section h3 small { color: var(--muted); font-size: 12px; font-weight: 500; }
+.profile-muted { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.profile-covered { display: flex; flex-wrap: wrap; gap: 6px; }
+.profile-card .ui-badge { background: var(--surface); }
+.profile-card .ui-badge--active { background: var(--forest); color: #fff; }
+.profile-breads { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.profile-breads li { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 10px; align-items: center; padding: 10px; border: 1px solid rgb(91 58 36 / 16%); border-radius: 12px; background: var(--surface); }
+.profile-breads li.is-representative { border-color: var(--forest); }
+.profile-bread-photo { width: 56px; height: 56px; }
+.profile-bread-photo .db-bread-photo { display: block; width: 56px; height: 56px; }
+.profile-bread-head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.profile-bread-head strong { color: var(--cocoa); font-size: 15px; font-weight: 750; }
+.profile-bread-head span { color: var(--muted); font-size: 12px; }
+.profile-bread-head .ui-badge { padding: 2px 7px; font-size: 11px; }
+.profile-bread-tags { display: flex; flex-wrap: wrap; gap: 2px 8px; margin: 4px 0 0; color: var(--forest); font-size: 13px; font-weight: 650; }
+.profile-others { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.profile-others li { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid rgb(91 58 36 / 16%); border-radius: 999px; background: var(--surface); font-size: 13px; font-weight: 600; }
+.profile-others li small { color: var(--muted); font-weight: 500; }
+/* out of the bag: on the first reveal the ticket comes up from inside the bag and settles in front of it */
+.profile-card[data-state="open"][data-animate] { animation: profile-card-out 520ms cubic-bezier(.2, .8, .2, 1) both; }
+
+
+/* stage motion */
+.bag-gallery[data-stage="shaking"] .bag-open-button { animation: bag-shake 520ms ease-in-out both; }
+.bag-gallery[data-stage="revealing"] .bag-opened .bag-paper { animation: bag-open-pop 360ms ease both; }
+
+.reveal-footer { display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 20px; }
+
+@keyframes bag-shake { 0%,100% { transform: rotate(0) scale(1); } 20%,60% { transform: rotate(-4deg) scale(1.025); } 40%,80% { transform: rotate(4deg) scale(1.025); } }
+@keyframes bag-open-pop { from { transform: scale(.97); } 60% { transform: scale(1.015); } to { transform: scale(1); } }
+@keyframes bag-card-rise { from { transform: translateY(105%) rotate(-1.5deg); } to { transform: translateY(0) rotate(-1.5deg); } }
+@keyframes bag-print-in { from { opacity: 0; transform: translateY(6px); } 40% { opacity: 0; } to { opacity: 1; transform: none; } }
+@keyframes profile-card-out { from { opacity: 0; transform: translateY(150px) scale(.7); } 30% { opacity: 1; } to { opacity: 1; transform: none; } }
+
+
+@media (max-width: 1000px) {
+  /* shorter site header below 1001px puts the bag 12px higher — cap the sticky spot to match */
+  .bag-side-nav { top: min(calc(50vh - 24px), 558px); }
+}
+@media (max-width: 900px) {
+  .reveal-main { width: calc(100% - 40px); }
+}
+@media (max-width: 620px) {
+  .reveal-main { width: calc(100% - 32px); padding-top: 28px; }
+  .reveal-heading h1 { font-size: 26px; }
+  .reveal-heading p { font-size: 14px; }
+  .bag-gallery { grid-template-columns: minmax(0, 1fr); column-gap: 0; min-height: 600px; margin-top: 16px; }
+  .bag-slot { grid-column: 1; width: 100%; }
+  /* no room beside the card on a phone: the arrows float over the edges instead, still mid-screen */
+  /* arrows float 4px from the screen edges (right edge at 44px); the card below keeps ≥48px from each edge so text,
+     photo and buttons never sit under them — see .profile-card width */
+  .bag-side-nav { position: fixed; top: calc(50vh - 20px); z-index: 25; grid-column: 1; grid-row: auto; width: 40px; height: 40px; margin-top: 0; background: rgb(255 252 245 / 92%); }
+  .bag-side-nav[data-dir="prev"] { left: calc(4px + env(safe-area-inset-left, 0px)); }
+  .bag-side-nav[data-dir="next"] { right: calc(4px + env(safe-area-inset-right, 0px)); }
+  .bag-side-nav svg { width: 18px; height: 18px; }
+  .bag-slot[data-position="center"] { min-height: 600px; }
+  .bag-stage[data-stage="closed"], .bag-stage[data-stage="shaking"], .bag-stage[data-stage="revealing"] { width: min(320px, 92%); min-height: 600px; }
+  .bag-open-layout { padding-top: 96px; }
+  .bag-open-layout > .bag-opened { width: min(320px, 92%); }
+  .bag-open-layout > .profile-card { width: min(296px, calc(100% - 64px)); margin-top: 72px; } /* 16px page gutter + 32px = 48px clear of the arrows */
+  .bag-card-photo { height: 124px; }
+  .bag-card { bottom: -60px; padding-bottom: 64px; }
+  .profile-card-photo { height: 200px; padding: 10px 10px 0; }
+  .profile-card-body { padding: 14px 14px 18px; }
+  .profile-breads { grid-template-columns: 1fr; }
+
+
+  .bag-actions .ui-button { font-size: 13px; }
+  .reveal-footer { padding-top: 24px; }
+}
+@media (max-width: 380px) {
+  /* the narrower card can't fit two buttons side by side without wrapping their labels */
+  .profile-actions { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bag-slot, .bag-open-button { transition: none; }
+  .bag-slot, .bag-card, .bag-print, .bag-paper, .bag-open-button, .profile-card { animation: none !important; }
+}

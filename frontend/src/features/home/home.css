@@ -1,0 +1,128 @@
+.curation-home {
+  --home-width: 1240px;
+  --home-gutter: clamp(24px, 6vw, 96px);
+  --header-height: 88px;
+  color: var(--ink);
+}
+.curation-home .site-header {
+  position: sticky; top: 0;
+  padding-inline: max(var(--home-gutter), calc((100% - var(--home-width)) / 2 + 32px));
+  border-bottom: 0;
+}
+.curation-home .brand img { width: 155px; height: 52px; }
+.curation-home .site-header nav { gap: clamp(32px, 4vw, 64px); align-self: stretch; }
+.curation-home .site-header nav button { font-size: 22px; font-weight: 700; white-space: nowrap; }
+.curation-home .site-header nav button[aria-current] { font-weight: 800; }
+.curation-home .site-header nav button[aria-current]::after { bottom: 17px; height: 3px; }
+.curation-home .site-login { justify-self: end; font-size: 20px; font-weight: 700; }
+.home-curation, .home-invitation, .home-footer { width: min(var(--home-width), calc(100% - var(--home-gutter) * 2)); margin-inline: auto; }
+.home-curation { padding-top: clamp(42px, 6.5svh, 68px); }
+.home-curation h1 { margin: 0 0 40px; text-align: center; color: var(--cocoa); font-size: clamp(36px, 3.6vw, 50px); font-weight: 750; line-height: 1.25; letter-spacing: -.045em; word-break: keep-all; }
+/* Only the bread name changes between cards — colour it so the swap reads at a glance. Same face, size and weight as the rest. */
+.home-curation h1 .curation-subject { color: var(--forest); }
+.campaign-carousel { position: relative; }
+.campaign-stage { position: relative; height: clamp(350px, 46svh, 480px); isolation: isolate; touch-action: pan-y pinch-zoom; }
+.campaign-slot {
+  position: absolute; left: 50%; top: 0; width: 69%; height: 100%;
+  transform: translateX(-50%); transform-origin: center; z-index: 3;
+  transition: transform 550ms cubic-bezier(.22,.7,.2,1);
+  will-change: transform;
+}
+.campaign-slot[data-position="left"] { transform: translateX(-84%) scale(.77); z-index: 1; pointer-events: none; }
+.campaign-slot[data-position="right"] { transform: translateX(-16%) scale(.77); z-index: 1; pointer-events: none; }
+.campaign-slot[data-position="left"][data-distance="2"] { transform: translateX(-112%) scale(.6); z-index: 0; opacity: .55; }
+.campaign-slot[data-position="right"][data-distance="2"] { transform: translateX(12%) scale(.6); z-index: 0; opacity: .55; }
+.campaign-card { position: relative; display: block; width: 100%; height: 100%; overflow: hidden; border-radius: 12px; background: var(--line); color: #fff; user-select: none; box-shadow: 0 14px 28px -14px rgb(41 31 25 / 38%); }
+.campaign-card img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.campaign-card::after { content: ""; position: absolute; inset: 48% 0 0; background: linear-gradient(transparent, rgb(16 13 10 / 76%)); pointer-events: none; }
+.campaign-card:focus-visible { outline: 3px solid #fff; outline-offset: -6px; }
+.campaign-caption { position: absolute; z-index: 1; inset: auto 32px 28px; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; text-shadow: 0 1px 8px rgb(0 0 0 / 24%); transition: opacity 180ms ease; }
+.campaign-slot:not([data-position="center"]) .campaign-caption { opacity: 0; }
+.campaign-slot:not([data-position="center"]) .campaign-card::after { opacity: 0; }
+.campaign-caption h2 { font-size: clamp(25px, 2.5vw, 36px); font-weight: 750; letter-spacing: -.035em; line-height: 1.25; word-break: keep-all; }
+.campaign-caption p { margin-top: 10px; font-size: clamp(16px, 1.4vw, 21px); font-weight: 500; line-height: 1.4; }
+.campaign-caption > svg { width: 30px; height: 30px; flex-shrink: 0; }
+.campaign-arrow { position: absolute; top: 50%; z-index: 5; transform: translateY(-50%); }
+.campaign-arrow--previous { left: 0; }
+.campaign-arrow--next { right: 0; }
+.curation-home .campaign-arrow.ui-button { width: 60px; height: 60px; min-height: 60px; padding: 0; border: 1px solid rgb(255 255 255 / 85%); border-radius: 50%; background: #fff; color: var(--ink); box-shadow: 0 3px 14px rgb(0 0 0 / 10%); }
+.curation-home .campaign-arrow:hover { background: var(--canvas); }
+.curation-home .campaign-arrow svg { width: 28px; height: 28px; stroke-width: 2; }
+.campaign-controls { display: flex; align-items: center; justify-content: center; gap: 32px; margin-top: 26px; }
+.campaign-count { display: flex; gap: 4px; color: var(--muted); font-size: 20px; font-variant-numeric: tabular-nums; letter-spacing: 0; white-space: nowrap; }
+.campaign-count strong { color: var(--ink); font-weight: 750; }
+.campaign-dots { display: flex; gap: 0; }
+.campaign-dots button { display: grid; place-items: center; width: 40px; height: 44px; border: 0; padding: 0; background: none; border-radius: 50%; }
+.campaign-dots span { width: 12px; height: 12px; border-radius: 50%; background: #bfbdbc; transition: background-color 150ms ease; }
+.campaign-dots [aria-current] span { background: var(--cocoa); }
+.home-sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.ui-button.ui-button--round { width: 40px; height: 40px; min-height: 40px; padding: 0; border-radius: 50%; }
+.ui-button.ui-button--campaign { min-height: 60px; padding: 0 28px; font-size: 19px; font-weight: 650; border-radius: 12px; }
+.ui-button--campaign svg { width: 24px; height: 24px; }
+.home-invitation { display: grid; grid-template-columns: 1fr 1.06fr; align-items: center; gap: 64px; margin-top: 96px; margin-bottom: 88px; }
+.invitation-copy { align-self: start; padding-top: 28px; }
+.invitation-copy h2 { font-size: clamp(30px, 2.7vw, 40px); font-weight: 750; line-height: 1.28; letter-spacing: -.04em; word-break: keep-all; }
+.invitation-copy p { margin-top: 24px; color: var(--muted); font-size: 21px; line-height: 1.7; }
+.invitation-copy > .ui-button { justify-content: space-between; gap: 50px; min-width: 300px; margin-top: 38px; }
+.invitation-photo { height: 400px; overflow: hidden; border-radius: 12px; }
+.invitation-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.home-footer { padding: 26px 0 36px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+.home-footer-brand { display: flex; justify-content: space-between; gap: 20px; }
+.campaign-sources { margin-top: 20px; max-width: 760px; font-size: 12px; line-height: 1.7; }
+.campaign-sources summary { cursor: pointer; width: fit-content; }
+.campaign-sources ul { margin: 10px 0; padding-left: 20px; }
+.campaign-sources a { text-decoration: underline; text-underline-offset: 3px; }
+.campaign-sources svg { width: 12px; height: 12px; vertical-align: middle; margin-left: 4px; }
+
+@media (max-width: 1100px) {
+  .curation-home { --header-height: 80px; --home-gutter: 40px; }
+  .curation-home .site-header { padding-inline: var(--home-gutter); }
+  .curation-home .site-header nav { gap: 26px; }
+  .curation-home .site-header nav button { font-size: 19px; }
+  .curation-home .site-login { font-size: 18px; }
+  .curation-home .brand img { width: 138px; }
+  .home-curation h1 { margin-bottom: 36px; }
+  .campaign-caption { inset: auto 24px 24px; }
+  .home-invitation { gap: 40px; margin-top: 72px; }
+  .invitation-photo { height: 350px; }
+  .invitation-copy p { font-size: 18px; }
+}
+@media (max-width: 760px) {
+  .curation-home { --home-gutter: 24px; --header-height: 72px; padding-bottom: 78px; }
+  .curation-home .site-header { display: flex; justify-content: space-between; }
+  .curation-home .site-header nav { display: none; }
+  .curation-home .site-mobile-nav { display: flex; position: fixed; inset: auto 0 0; z-index: 30; min-height: 68px; padding: 8px 12px max(8px, env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: var(--canvas); }
+  .curation-home .site-mobile-nav button { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 0; background: none; font-size: 13px; color: var(--muted); }
+  .curation-home .site-mobile-nav button[aria-current] { color: var(--ink); font-weight: 750; }
+  .curation-home .site-mobile-nav svg { width: 22px; height: 22px; }
+  .home-curation { padding-top: 36px; }
+  .home-curation h1 { max-width: 360px; margin: 0 auto 32px; padding-inline: 8px; font-size: clamp(30px, 7.5vw, 40px); line-height: 1.25; }
+  .campaign-stage { height: clamp(310px, 47svh, 410px); }
+  .campaign-slot { width: 82%; }
+  .campaign-slot[data-position="left"] { transform: translateX(-68%) scale(.78); }
+  .campaign-slot[data-position="right"] { transform: translateX(-32%) scale(.78); }
+  .campaign-slot[data-distance="2"] { opacity: 0; pointer-events: none; }
+  .campaign-card { border-radius: 10px; }
+  .campaign-caption { inset: auto 20px 24px; }
+  .campaign-caption h2 { max-width: 220px; font-size: 27px; }
+  .campaign-caption p { font-size: 15px; }
+  .campaign-caption > svg { width: 24px; height: 24px; }
+  .curation-home .campaign-arrow.ui-button { width: 44px; height: 44px; min-height: 44px; }
+  .curation-home .campaign-arrow svg { width: 23px; height: 23px; }
+  .campaign-arrow--previous { left: -8px; }
+  .campaign-arrow--next { right: -8px; }
+  .campaign-controls { gap: 20px; margin-top: 18px; }
+  .campaign-count { font-size: 17px; }
+  .campaign-dots button { width: 36px; }
+  .campaign-dots span { width: 10px; height: 10px; }
+  .home-invitation { grid-template-columns: 1fr; gap: 30px; margin-top: 64px; margin-bottom: 52px; }
+  .invitation-copy h2 { font-size: 31px; max-width: 330px; }
+  .invitation-copy { padding-top: 0; }
+  .invitation-copy p { margin-top: 18px; font-size: 18px; }
+  .invitation-copy > .ui-button { min-width: 270px; margin-top: 26px; }
+  .invitation-photo { height: 310px; }
+  .home-footer-brand { flex-direction: column; gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .campaign-slot, .campaign-caption, .campaign-dots span { transition: none; }
+}

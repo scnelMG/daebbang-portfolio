@@ -1,0 +1,22 @@
+# Allow only build inputs; local env files, dependencies and reports stay out.
+**
+!package.json
+!pnpm-lock.yaml
+!index.html
+!vite.config.js
+!jsconfig.json
+!src/
+!src/**
+!assets/
+!assets/**
+!public/
+!public/**
+!test/
+!test/**
+!tests/
+!tests/**
+!docker/
+!docker/**
+**/.env*
+**/*.pem
+**/*.key

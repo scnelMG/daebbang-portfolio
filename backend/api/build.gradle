@@ -1,0 +1,20 @@
+// 온라인 API (⑤): 추천 조회·회원·리뷰. 배치/Spark/LLM 의존 없음 (설계 원칙).
+plugins {
+	id 'org.springframework.boot'
+}
+
+dependencies {
+	implementation project(':domain')
+	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	// Boot 4: webmvc 스타터에 Jackson 미포함 (starter-json도 Boot 4엔 없음) — 직접 추가
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+	// 구글 ID 토큰 검증 (구글 공개키 자동 갱신 + aud/iss/exp 검사) — 클라이언트 시크릿 불필요
+	implementation 'com.google.api-client:google-api-client:2.7.0'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+}

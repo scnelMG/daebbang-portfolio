@@ -1,0 +1,14 @@
+// 배치 (①수집 ②전처리 ③LLM 라벨링 ⑥부가): 주 1회 스케줄 실행. Mongo는 배치 전용.
+plugins {
+	id 'org.springframework.boot'
+}
+
+dependencies {
+	implementation project(':domain')
+	implementation 'org.springframework.boot:spring-boot-starter-batch'
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+	implementation 'org.jsoup:jsoup:1.18.3'   // ② 본문 파싱 (PoC의 셀렉터 로직 이식)
+	implementation 'com.fasterxml.jackson.core:jackson-databind'   // 티스토리 검색 API JSON 파싱
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	testImplementation 'org.springframework.boot:spring-boot-starter-batch-test'
+}

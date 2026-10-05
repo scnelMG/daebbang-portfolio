@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: bangtray-batch
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:127.0.0.1}:3306/bangtray?serverTimezone=Asia/Seoul
+    username: bangtray
+    password: ${MYSQL_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: validate   # 스키마의 단일 원천은 schema.sql — JPA는 검증만
+    open-in-view: false
+  # 주의: Boot 4부터 접속 설정 키가 spring.data.mongodb.* 가 아니라 spring.mongodb.* 다
+  # (전자로 쓰면 조용히 무시되고 기본값 localhost/test 로 붙음 — 실제로 겪은 사고)
+  mongodb:
+    # EC2 호스트에서 실행 시 directConnection 필수 (rs 광고 호스트명 mongo1~3은 호스트에서 미해석).
+    # 컨테이너로 옮기면 mongodb://mongo1:27017,mongo2:27017,mongo3:27017/bangtray?replicaSet=rs0
+    uri: ${MONGO_URI:mongodb://127.0.0.1:27017/bangtray?directConnection=true}
+  batch:
+    jdbc:
+      initialize-schema: always   # BATCH_* 메타테이블 최초 자동 생성
+    job:
+      enabled: false              # 기동만으로 잡 자동 실행 금지 — 스케줄러가 명시적으로 launch
+
+bangtray:
+  collect:
+    pages: 2               # 쿼리당 검색 페이지 수 (페이지당 30건)
+    max-per-query: 30      # 쿼리당 본문 크롤 상한
+    run-on-startup: false  # true면 기동 직후 1회 실행 (수동 테스트: --bangtray.collect.run-on-startup=true)
+    cron: "0 0 4 * * MON"  # 주 1회 (월요일 04:00 KST)
+  ranking:
+    run-on-startup: false  # 수동 테스트: --bangtray.ranking.run-on-startup=true
+    cron: "0 10 0 1 * *"   # 매월 1일 00:10 KST — 지난달 확정 집계
+    year-month: ""         # 수동 대상 월 (예: 2026-08). 비우면 지난달
+  label:
+    run-on-startup: false     # 수동 테스트: --bangtray.label.run-on-startup=true
+    cron: "0 0 6 * * MON"     # 주 1회 (월요일 06:00 KST) — 수집 잡(04:00) 이후 신규 문서 증분 처리
+    max-docs-per-run: 500     # 실행당 문서 상한 (labeled:false만 대상 — 넘치면 다음 실행이 이어감)
+    model: gpt-4o-mini
+    api-url: https://api.openai.com/v1/chat/completions
+    api-key: ${OPENAI_API_KEY:}  # 미설정이면 잡이 아무것도 하지 않고 종료 (키 대기 중)

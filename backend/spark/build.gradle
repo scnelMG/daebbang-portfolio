@@ -1,0 +1,51 @@
+// ④ Spark 점수 집계 — 주 1회 전체 재계산(full refresh), 공식 v1-mest-hl180.
+// Spring 미사용 순수 Spark 앱. 실행: :spark:installDist 후 bin/spark (JAVA_HOME은 JDK 17 —
+// Spark 3.5가 Java 21 미지원이라 이 모듈만 릴리즈 17로 빌드한다)
+plugins {
+	id 'application'
+}
+
+application {
+	mainClass = 'com.bangtray.spark.ScoreAggregationJob'
+	// spark-submit 없이 installDist 스크립트로 실행하므로, spark-submit이 넣어주는
+	// JDK 17 모듈 개방 플래그를 직접 지정 (없으면 SparkSession 기동 시 IllegalAccessError)
+	applicationDefaultJvmArgs = [
+			'--add-opens=java.base/java.lang=ALL-UNNAMED',
+			'--add-opens=java.base/java.lang.invoke=ALL-UNNAMED',
+			'--add-opens=java.base/java.lang.reflect=ALL-UNNAMED',
+			'--add-opens=java.base/java.io=ALL-UNNAMED',
+			'--add-opens=java.base/java.net=ALL-UNNAMED',
+			'--add-opens=java.base/java.nio=ALL-UNNAMED',
+			'--add-opens=java.base/java.util=ALL-UNNAMED',
+			'--add-opens=java.base/java.util.concurrent=ALL-UNNAMED',
+			'--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED',
+			'--add-opens=java.base/sun.nio.ch=ALL-UNNAMED',
+			'--add-opens=java.base/sun.nio.cs=ALL-UNNAMED',
+			'--add-opens=java.base/sun.security.action=ALL-UNNAMED',
+			'--add-opens=java.base/sun.util.calendar=ALL-UNNAMED',
+			'-Djdk.reflect.useDirectMethodHandle=false',
+	]
+}
+
+tasks.withType(JavaCompile).configureEach {
+	// 클러스터 이미지(apache/spark:3.5.4)가 Java 11 런타임 — 최저 공통 버전으로 빌드
+	// (로컬 모드 실행은 JDK 17로 해도 무방: 11 바이트코드는 상위 JRE에서 그대로 동작)
+	options.release = 11
+}
+
+configurations.configureEach {
+	resolutionStrategy {
+		// Boot BOM이 Jackson을 최신으로 올리면 Spark의 jackson-module-scala(2.15 요구)와 깨진다
+		force 'com.fasterxml.jackson.core:jackson-databind:2.15.2',
+				'com.fasterxml.jackson.core:jackson-core:2.15.2',
+				'com.fasterxml.jackson.core:jackson-annotations:2.15.2',
+				'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
+	}
+}
+
+dependencies {
+	implementation 'org.apache.spark:spark-sql_2.12:3.5.4'
+	implementation 'javax.servlet:javax.servlet-api:4.0.1'   // Boot BOM이 jakarta로 치환해 빠지는 것 명시 복구
+	implementation 'org.mongodb.spark:mongo-spark-connector_2.12:10.4.1'   // Mongo 전체 리뷰 수·날짜 (분모)
+	runtimeOnly 'com.mysql:mysql-connector-j'                              // 라벨·회원 리뷰(JDBC) + 결과 저장
+}
